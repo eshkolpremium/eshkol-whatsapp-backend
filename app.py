@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Configura tu clave de OpenAI aquí (usa variables de entorno en producción)
+# Configura tu clave de OpenAI desde variables de entorno
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/webhook", methods=["POST"])
@@ -16,7 +16,7 @@ def whatsapp_webhook():
     # Llamar al GPT para obtener respuesta
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4",  # Puedes cambiar a "gpt-3.5-turbo" si lo prefieres
             messages=[
                 {"role": "system", "content": "Eres el asistente comercial de Eshkol Premium, especializado en tomar y rastrear pedidos de productos frescos."},
                 {"role": "user", "content": user_message}
@@ -24,8 +24,8 @@ def whatsapp_webhook():
         )
         reply = response.choices[0].message.content.strip()
     except Exception as e:
-    print(f"Error GPT: {e}")  # Esto lo verás en Render
-    reply = "Hubo un error procesando tu mensaje. Intentaremos nuevamente."
+        print(f"Error GPT: {e}")  # Esto se mostrará en los logs de Render
+        reply = "Hubo un error procesando tu mensaje. Intentaremos nuevamente."
 
     # Respuesta para Twilio
     twilio_response = f"<?xml version='1.0' encoding='UTF-8'?><Response><Message>{reply}</Message></Response>"
