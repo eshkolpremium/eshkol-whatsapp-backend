@@ -24,7 +24,8 @@ def whatsapp_webhook():
         )
         reply = response.choices[0].message.content.strip()
     except Exception as e:
-        reply = "Hubo un error procesando tu mensaje. Intentaremos nuevamente."
+    print(f"Error GPT: {e}")  # Esto lo verás en Render
+    reply = "Hubo un error procesando tu mensaje. Intentaremos nuevamente."
 
     # Respuesta para Twilio
     twilio_response = f"<?xml version='1.0' encoding='UTF-8'?><Response><Message>{reply}</Message></Response>"
