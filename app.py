@@ -15,7 +15,7 @@ def whatsapp_webhook():
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4",  # Puedes cambiar a "gpt-3.5-turbo"
+            model="gpt-3.5-turbo",  # Puedes cambiar a "gpt-3.5-turbo"
             messages=[
                 {"role": "system", "content": "Eres el asistente comercial de Eshkol Premium, especializado en tomar y rastrear pedidos de productos frescos."},
                 {"role": "user", "content": user_message}
