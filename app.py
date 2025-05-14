@@ -27,7 +27,7 @@ def whatsapp_webhook():
     user_number = data.get("From")
 
     def guardar_pedido_final(datos):
-        nonlocal consecutivo
+        global consecutivo
         consecutivo += 1
         pedido = {
             "consecutivo": consecutivo,
@@ -43,6 +43,9 @@ def whatsapp_webhook():
         data["pedidos"].append(pedido)
         with open(PEDIDOS_FILE, "w") as f:
             json.dump(data, f, indent=2)
+
+        # Aquí se puede insertar integración con Google Sheets
+        print(f"Pedido confirmado #{consecutivo} para hoja de cálculo: {pedido}")
 
     try:
         productos_pedidos = []
@@ -73,7 +76,9 @@ def whatsapp_webhook():
         elif all(k in user_message for k in ["nombre", "pre-orden", "fecha", "hora"]):
             datos = ordenes_temporales.get(user_number, {})
             datos.update({"detalles": user_message})
-            if any(ciudad in user_message for ciudad in ["bogotá", "medellín", "cali", "cartagena", "barranquilla"]):
+            if any(ciudad in user_message for ciudad in [
+                "miami", "new york", "atlanta", "los angeles", "houston", "dallas", "chicago"
+            ]):
                 reply = (
                     "¿Deseas enviar el pedido por vía aérea o terrestre?\n"
                     "Indícanos también la aerolínea o transportadora y la ciudad destino."
@@ -95,7 +100,10 @@ def whatsapp_webhook():
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "Eres el asistente comercial de Eshkol Premium. Si detectas que el usuario escribe varios productos juntos, extrae y agrúpalos. Si el cliente confirma, pide nombre, pre-orden, fecha y hora de entrega. Si detectas una ciudad diferente, pregunta si desea envío aéreo o terrestre y qué empresa usará."},
+                    {
+                        "role": "system",
+                        "content": "Eres el asistente comercial de Eshkol Premium. Si detectas que el usuario escribe varios productos juntos, extrae y agrúpalos. Si el cliente confirma, pide nombre, pre-orden, fecha y hora de entrega. Si detectas una ciudad de EE.UU., pregunta si desea envío aéreo o terrestre y qué empresa usará."
+                    },
                     {"role": "user", "content": user_message}
                 ]
             )
